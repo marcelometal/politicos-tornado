@@ -80,3 +80,11 @@ class TestPoliticalParty(ApiTestCase):
             PoliticalPartyFactory.create(
                 siglum=u'HMP', name=u'Hevy Metal Party'
             )
+
+    def test_can_get_absolute_url(self):
+        data = {'name': u'Hevy Metal Party', 'siglum': u'HMP'}
+        political_party = PoliticalParty.add_political_party(self.db, data)
+
+        expect(political_party.absolute_url(self.get_app())).to_equal(
+            '/political-parties/HMP'
+        )

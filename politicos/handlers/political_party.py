@@ -76,8 +76,10 @@ class AllPoliticalPartyHandler(BaseHandler):
         }
 
         try:
-            political_party = PoliticalParty.add_political_party(self.db, data)
-            self.write_json(political_party.to_dict())
+            pp = PoliticalParty.add_political_party(self.db, data)
+            self.set_status(201, 'Political Party created')
+            self.set_header('Location', '%s' % pp.absolute_url(self))
+            self.write_json(pp.to_dict())
         except IntegrityError:
             self.set_status(409, 'Political Party already exists')
             self.write_json({'message': 'Political Party already exists'})

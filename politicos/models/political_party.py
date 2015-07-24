@@ -51,6 +51,9 @@ class PoliticalParty(Base):
             'tse_number': self.tse_number,
         }
 
+    def absolute_url(self, handler):
+        return handler.reverse_url('political-party', self.siglum)
+
     @classmethod
     def add_political_party(self, db, data):
         political_party = PoliticalParty(

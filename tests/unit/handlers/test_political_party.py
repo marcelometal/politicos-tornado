@@ -97,7 +97,10 @@ class TestAllPoliticalPartyHandler(ApiTestCase):
             method='POST',
             body=dumps({'name': u'Partido Heavy Metal', 'siglum': u'PHM'})
         )
-        expect(response.code).to_equal(200)
+        expect(response.code).to_equal(201)
+        expect(response.headers.get('location')).to_equal(
+            '/political-parties/PHM'
+        )
         data = loads(response.body)
         expect(data.get('siglum')).to_equal('PHM')
 
