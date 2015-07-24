@@ -30,7 +30,7 @@ class TestLegislatorEventsTypeHandler(ApiTestCase):
     def test_can_get_empty_legislator_events_type_info(self):
         try:
             yield self.anonymous_fetch(
-                '/legislator-events-types/presidente-do-partido/',
+                '/legislator-events-types/presidente-do-partido',
                 method='GET'
             )
         except HTTPError as e:
@@ -46,7 +46,7 @@ class TestLegislatorEventsTypeHandler(ApiTestCase):
         LegislatorEventsTypeFactory.create(name=u'Presidente do Partido')
 
         response = yield self.anonymous_fetch(
-            '/legislator-events-types/presidente-do-partido/',
+            '/legislator-events-types/presidente-do-partido',
             method='GET'
         )
         expect(response.code).to_equal(200)

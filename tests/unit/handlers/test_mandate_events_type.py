@@ -30,7 +30,7 @@ class TestMandateEventsTypeHandler(ApiTestCase):
     def test_can_get_empty_mandate_events_type_info(self):
         try:
             yield self.anonymous_fetch(
-                '/mandate-events-types/assumiu-cargo-no-executivo/',
+                '/mandate-events-types/assumiu-cargo-no-executivo',
                 method='GET'
             )
         except HTTPError as e:
@@ -46,7 +46,7 @@ class TestMandateEventsTypeHandler(ApiTestCase):
         MandateEventsTypeFactory.create(name=u'Assumiu cargo no executivo')
 
         response = yield self.anonymous_fetch(
-            '/mandate-events-types/assumiu-cargo-no-executivo/',
+            '/mandate-events-types/assumiu-cargo-no-executivo',
             method='GET'
         )
         expect(response.code).to_equal(200)

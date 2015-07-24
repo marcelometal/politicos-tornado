@@ -19,6 +19,7 @@
 from cow.server import Server
 from cow.plugins.sqlalchemy_plugin import SQLAlchemyPlugin
 from tornado.httpclient import AsyncHTTPClient
+from tornado.web import url
 
 from politicos import __version__
 from politicos.utils import load_classes
@@ -73,33 +74,87 @@ class PoliticosApiServer(Server):
             self.debug = self.force_debug
 
     def get_handlers(self):
-        siglum_regex = r'[A-Za-z0-9\.]+'
-        slug_regex = r'[a-z0-9-]+'
-        # numbers_regex = r'[0-9]+'
-
         handlers = [
-            ('/institutions/?', AllInstitutionsHandler),
-            ('/institutions/(%s)/?' % siglum_regex, InstitutionHandler),
-            ('/political-parties/?', AllPoliticalPartyHandler),
-            (
-                '/political-parties/(%s)/?' % siglum_regex,
-                PoliticalPartyHandler),
-            ('/political-offices/?', AllPoliticalOfficesHandler),
-            ('/political-offices/(%s)/?' % slug_regex, PoliticalOfficeHandler),
-            ('/legislators/?', AllLegislatorsHandler),
-            ('/legislator-events/?', AllLegislatorEventsHandler),
-            ('/legislator-events-types/?', AllLegislatorEventsTypesHandler),
-            (
-                '/legislator-events-types/(%s)/?' % slug_regex,
-                LegislatorEventsTypeHandler),
-            ('/legislatures/?', AllLegislaturesHandler),
-            ('/mandates/?', AllMandatesHandler),
-            ('/mandate-events/?', AllMandateEventsHandler),
-            ('/mandate-events-types/?', AllMandateEventsTypesHandler),
-            (
-                '/mandate-events-types/(%s)/?' % slug_regex,
-                MandateEventsTypeHandler),
-            ('/version/?', VersionHandler),
+            url(
+                r'/institutions/',
+                AllInstitutionsHandler,
+                name='institutions'
+            ),
+            url(
+                r'/institutions/(?P<siglum>[A-Za-z0-9\.]+)',
+                InstitutionHandler,
+                name='institution'
+            ),
+            url(
+                r'/political-parties/',
+                AllPoliticalPartyHandler,
+                name='political-parties'
+            ),
+            url(
+                r'/political-parties/(?P<siglum>[A-Za-z0-9\.]+)',
+                PoliticalPartyHandler,
+                name='political-party'
+            ),
+            url(
+                r'/political-offices/',
+                AllPoliticalOfficesHandler,
+                name='political-offices'
+            ),
+            url(
+                r'/political-offices/(?P<slug>[a-z0-9-]+)',
+                PoliticalOfficeHandler,
+                name='political-office'
+            ),
+            url(
+                r'/legislators/',
+                AllLegislatorsHandler,
+                name='legislators'
+            ),
+            url(
+                r'/legislator-events/',
+                AllLegislatorEventsHandler,
+                name='legislator-events'
+            ),
+            url(
+                r'/legislator-events-types/',
+                AllLegislatorEventsTypesHandler,
+                name='legislator-events-types'
+            ),
+            url(
+                r'/legislator-events-types/(?P<slug>[a-z0-9-]+)',
+                LegislatorEventsTypeHandler,
+                name='legislator-events-type'
+            ),
+            url(
+                r'/legislatures/',
+                AllLegislaturesHandler,
+                name='legislatures'
+            ),
+            url(
+                r'/mandates/',
+                AllMandatesHandler,
+                name='mandates'
+            ),
+            url(
+                r'/mandate-events/',
+                AllMandateEventsHandler,
+                name='mandate-events'
+            ),
+            url(
+                r'/mandate-events-types/',
+                AllMandateEventsTypesHandler,
+                name='mandate-events-types'
+            ),
+            url(
+                r'/mandate-events-types/(?P<slug>[a-z0-9-]+)',
+                MandateEventsTypeHandler,
+                name='mandate-events-type'
+            ),
+            url(
+                r'/version',
+                VersionHandler,
+                name='version'
+            ),
         ]
 
         return tuple(handlers)

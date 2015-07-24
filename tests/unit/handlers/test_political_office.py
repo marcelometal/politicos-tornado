@@ -30,7 +30,7 @@ class TestPoliticalOfficeHandler(ApiTestCase):
     def test_can_get_empty_political_office_info(self):
         try:
             yield self.anonymous_fetch(
-                '/political-offices/deputado-estadual/',
+                '/political-offices/deputado-estadual',
                 method='GET'
             )
         except HTTPError as e:
@@ -44,7 +44,7 @@ class TestPoliticalOfficeHandler(ApiTestCase):
         PoliticalOfficeFactory.create(name=u'Deputado Estadual')
 
         response = yield self.anonymous_fetch(
-            '/political-offices/deputado-estadual/',
+            '/political-offices/deputado-estadual',
             method='GET'
         )
         expect(response.code).to_equal(200)
