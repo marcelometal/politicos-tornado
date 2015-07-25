@@ -39,7 +39,7 @@ class TestLegislatorEventsTypeHandler(ApiTestCase):
 
     @gen_test
     def test_can_get_legislator_events_type_info(self):
-        LegislatorEventsTypeFactory.create(name='Presidente do Partido')
+        LegislatorEventsTypeFactory.create(name=u'Presidente do Partido')
 
         response = yield self.anonymous_fetch(
             '/legislator-events-types/presidente-do-partido/',
@@ -94,7 +94,7 @@ class TestAllPoliticalOfficesHandler(ApiTestCase):
         response = yield self.anonymous_fetch(
             '/legislator-events-types/',
             method='POST',
-            body=dumps({'name': 'Presidente do Partido'})
+            body=dumps({'name': u'Presidente do Partido'})
         )
         expect(response.code).to_equal(200)
         data = loads(response.body)
@@ -105,7 +105,7 @@ class TestAllPoliticalOfficesHandler(ApiTestCase):
         yield self.anonymous_fetch(
             '/legislator-events-types/',
             method='POST',
-            body=dumps({'name': 'Presidente do Partido'})
+            body=dumps({'name': u'Presidente do Partido'})
         )
 
         try:

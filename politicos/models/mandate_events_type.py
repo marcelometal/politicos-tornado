@@ -46,7 +46,7 @@ class MandateEventsType(Base):
     def add_mandate_events_type(self, db, data):
         mandate_events_type = MandateEventsType(
             name=data.get('name'),
-            slug=slugify(data.get('name')),
+            slug=unicode(slugify(data.get('name'))),
         )
 
         db.add(mandate_events_type)

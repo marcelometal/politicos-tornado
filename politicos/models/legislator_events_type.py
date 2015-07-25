@@ -46,7 +46,7 @@ class LegislatorEventsType(Base):
     def add_legislator_events_type(self, db, data):
         legislator_events_type = LegislatorEventsType(
             name=data.get('name'),
-            slug=slugify(data.get('name')),
+            slug=unicode(slugify(data.get('name'))),
         )
 
         db.add(legislator_events_type)

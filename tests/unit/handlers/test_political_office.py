@@ -39,7 +39,7 @@ class TestPoliticalOfficeHandler(ApiTestCase):
 
     @gen_test
     def test_can_get_political_office_info(self):
-        PoliticalOfficeFactory.create(name='Deputado Estadual')
+        PoliticalOfficeFactory.create(name=u'Deputado Estadual')
 
         response = yield self.anonymous_fetch(
             '/political-offices/deputado-estadual/',
@@ -88,7 +88,7 @@ class TestAllPoliticalOfficesHandler(ApiTestCase):
         response = yield self.anonymous_fetch(
             '/political-offices/',
             method='POST',
-            body=dumps({'name': 'Deputado Estadual'})
+            body=dumps({'name': u'Deputado Estadual'})
         )
         expect(response.code).to_equal(200)
         data = loads(response.body)
@@ -100,7 +100,7 @@ class TestAllPoliticalOfficesHandler(ApiTestCase):
         yield self.anonymous_fetch(
             '/political-offices/',
             method='POST',
-            body=dumps({'name': 'Deputado Estadual'})
+            body=dumps({'name': u'Deputado Estadual'})
         )
 
         try:

@@ -28,7 +28,7 @@ class TestPoliticalOffice(ApiTestCase):
 
     def test_can_create_legislator_events_type(self):
         legislator_events_type = LegislatorEventsTypeFactory.create(
-            name='Presidente do Partido'
+            name=u'Presidente do Partido'
         )
 
         expect(legislator_events_type.id).not_to_be_null()
@@ -50,7 +50,7 @@ class TestPoliticalOffice(ApiTestCase):
 
     @patch('politicos.models.legislator_events_type.logging')
     def test_can_add_legislator_events_type(self, logging_mock):
-        data = {'name': 'Presidente do Partido'}
+        data = {'name': u'Presidente do Partido'}
         legislator_events_type = LegislatorEventsType \
             .add_legislator_events_type(self.db, data)
 
@@ -62,7 +62,7 @@ class TestPoliticalOffice(ApiTestCase):
         )
 
     def test_cannot_add_legislator_events_type_twice(self):
-        LegislatorEventsTypeFactory.create(name='Presidente do Partido')
+        LegislatorEventsTypeFactory.create(name=u'Presidente do Partido')
 
         with expect.error_to_happen(IntegrityError):
-            LegislatorEventsTypeFactory.create(name='Presidente do Partido')
+            LegislatorEventsTypeFactory.create(name=u'Presidente do Partido')

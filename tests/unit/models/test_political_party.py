@@ -28,9 +28,9 @@ class TestPoliticalParty(ApiTestCase):
 
     def test_can_create_political_party(self):
         political_party = PoliticalPartyFactory.create(
-            siglum='HMP',
-            name='Hevy Metal Party',
-            wikipedia='http://metalparty.com/'
+            siglum=u'HMP',
+            name=u'Hevy Metal Party',
+            wikipedia=u'http://metalparty.com/'
         )
 
         expect(political_party.id).not_to_be_null()
@@ -64,7 +64,7 @@ class TestPoliticalParty(ApiTestCase):
 
     @patch('politicos.models.political_party.logging')
     def test_can_add_political_party(self, logging_mock):
-        data = {'name': 'Hevy Metal Party', 'siglum': 'HMP'}
+        data = {'name': u'Hevy Metal Party', 'siglum': u'HMP'}
         political_party = PoliticalParty.add_political_party(self.db, data)
 
         expect(political_party.name).to_equal('Hevy Metal Party')
@@ -74,7 +74,9 @@ class TestPoliticalParty(ApiTestCase):
         ))
 
     def test_cannot_add_political_party_twice(self):
-        PoliticalPartyFactory.create(siglum='HMP', name='Hevy Metal Party')
+        PoliticalPartyFactory.create(siglum=u'HMP', name=u'Hevy Metal Party')
 
         with expect.error_to_happen(IntegrityError):
-            PoliticalPartyFactory.create(siglum='HMP', name='Hevy Metal Party')
+            PoliticalPartyFactory.create(
+                siglum=u'HMP', name=u'Hevy Metal Party'
+            )

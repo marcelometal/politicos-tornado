@@ -39,7 +39,7 @@ class TestMandateEventsTypeHandler(ApiTestCase):
 
     @gen_test
     def test_can_get_mandate_events_type_info(self):
-        MandateEventsTypeFactory.create(name='Assumiu cargo no executivo')
+        MandateEventsTypeFactory.create(name=u'Assumiu cargo no executivo')
 
         response = yield self.anonymous_fetch(
             '/mandate-events-types/assumiu-cargo-no-executivo/',
@@ -92,7 +92,7 @@ class TestAllPoliticalOfficesHandler(ApiTestCase):
         response = yield self.anonymous_fetch(
             '/mandate-events-types/',
             method='POST',
-            body=dumps({'name': 'Assumiu cargo no executivo'})
+            body=dumps({'name': u'Assumiu cargo no executivo'})
         )
         expect(response.code).to_equal(200)
         data = loads(response.body)
@@ -103,14 +103,14 @@ class TestAllPoliticalOfficesHandler(ApiTestCase):
         yield self.anonymous_fetch(
             '/mandate-events-types/',
             method='POST',
-            body=dumps({'name': 'Assumiu cargo no executivo'})
+            body=dumps({'name': u'Assumiu cargo no executivo'})
         )
 
         try:
             yield self.anonymous_fetch(
                 '/mandate-events-types/',
                 method='POST',
-                body=dumps({'name': 'Assumiu cargo no executivo'})
+                body=dumps({'name': u'Assumiu cargo no executivo'})
             )
         except HTTPError as e:
             expect(e).not_to_be_null()

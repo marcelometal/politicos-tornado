@@ -28,7 +28,7 @@ class TestPoliticalOffice(ApiTestCase):
 
     def test_can_create_political_office(self):
         political_office = PoliticalOfficeFactory.create(
-            name='Deputado Federal',
+            name=u'Deputado Federal',
         )
 
         expect(political_office.id).not_to_be_null()
@@ -46,7 +46,7 @@ class TestPoliticalOffice(ApiTestCase):
 
     @patch('politicos.models.political_office.logging')
     def test_can_add_political_office(self, logging_mock):
-        data = {'name': 'Deputado Federal'}
+        data = {'name': u'Deputado Federal'}
         political_office = PoliticalOffice.add_political_office(self.db, data)
 
         expect(political_office.name).to_equal('Deputado Federal')
@@ -55,7 +55,7 @@ class TestPoliticalOffice(ApiTestCase):
         )
 
     def test_cannot_add_political_office_twice(self):
-        PoliticalOfficeFactory.create(name='Deputado Federal')
+        PoliticalOfficeFactory.create(name=u'Deputado Federal')
 
         with expect.error_to_happen(IntegrityError):
-            PoliticalOfficeFactory.create(name='Deputado Federal')
+            PoliticalOfficeFactory.create(name=u'Deputado Federal')

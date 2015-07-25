@@ -46,7 +46,7 @@ class PoliticalOffice(Base):
     def add_political_office(self, db, data):
         political_office = PoliticalOffice(
             name=data.get('name'),
-            slug=slugify(data.get('name')),
+            slug=unicode(slugify(data.get('name'))),
         )
 
         db.add(political_office)

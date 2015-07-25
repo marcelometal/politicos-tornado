@@ -39,7 +39,7 @@ class TestPoliticalPartyHandler(ApiTestCase):
 
     @gen_test
     def test_can_get_political_party_info(self):
-        PoliticalPartyFactory.create(name='Partido Blah', siglum='PBA')
+        PoliticalPartyFactory.create(name=u'Partido Blah', siglum=u'PBA')
 
         response = yield self.anonymous_fetch(
             '/political-parties/PBA',
@@ -71,8 +71,8 @@ class TestAllPoliticalPartyHandler(ApiTestCase):
         political_parties = []
         for x in range(5):
             party = PoliticalPartyFactory.create(
-                name='Partido %s' % x,
-                siglum='%s' % x,
+                name=u'Partido %s' % x,
+                siglum=u'%s' % x,
                 founded_date=None,
             )
             political_parties.append(party.to_dict())
@@ -92,7 +92,7 @@ class TestAllPoliticalPartyHandler(ApiTestCase):
         response = yield self.anonymous_fetch(
             '/political-parties/',
             method='POST',
-            body=dumps({'name': 'Partido Heavy Metal', 'siglum': 'PHM'})
+            body=dumps({'name': u'Partido Heavy Metal', 'siglum': u'PHM'})
         )
         expect(response.code).to_equal(200)
         data = loads(response.body)
@@ -103,14 +103,14 @@ class TestAllPoliticalPartyHandler(ApiTestCase):
         yield self.anonymous_fetch(
             '/political-parties/',
             method='POST',
-            body=dumps({'name': 'Partido Heavy Metal', 'siglum': 'PHM'})
+            body=dumps({'name': u'Partido Heavy Metal', 'siglum': u'PHM'})
         )
 
         try:
             yield self.anonymous_fetch(
                 '/political-parties/',
                 method='POST',
-                body=dumps({'name': 'Partido Heavy Metal', 'siglum': 'PHM'})
+                body=dumps({'name': u'Partido Heavy Metal', 'siglum': u'PHM'})
             )
         except HTTPError as e:
             expect(e).not_to_be_null()
@@ -123,7 +123,7 @@ class TestAllPoliticalPartyHandler(ApiTestCase):
             yield self.anonymous_fetch(
                 '/political-parties/',
                 method='POST',
-                body=dumps({'siglum': 'PHM'})
+                body=dumps({'siglum': u'PHM'})
             )
         except HTTPError as e:
             expect(e).not_to_be_null()
@@ -136,7 +136,7 @@ class TestAllPoliticalPartyHandler(ApiTestCase):
             yield self.anonymous_fetch(
                 '/political-parties/',
                 method='POST',
-                body=dumps({'name': 'Partido Heavy Metal'})
+                body=dumps({'name': u'Partido Heavy Metal'})
             )
         except HTTPError as e:
             expect(e).not_to_be_null()

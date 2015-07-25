@@ -28,9 +28,9 @@ class TestInstitution(ApiTestCase):
 
     def test_can_create_institution(self):
         institution = InstitutionFactory.create(
-            siglum='HMI',
-            name='Hevy Metal Institution',
-            logo='http://metal.com/logo.png'
+            siglum=u'HMI',
+            name=u'Hevy Metal Institution',
+            logo=u'http://metal.com/logo.png'
         )
 
         expect(institution.id).not_to_be_null()
@@ -54,7 +54,7 @@ class TestInstitution(ApiTestCase):
 
     @patch('politicos.models.institution.logging')
     def test_can_add_institution(self, logging_mock):
-        data = {'name': 'Hevy Metal Institution', 'siglum': 'HMI'}
+        data = {'name': u'Hevy Metal Institution', 'siglum': u'HMI'}
         institution = Institution.add_institution(self.db, data)
 
         expect(institution.name).to_equal('Hevy Metal Institution')
@@ -64,9 +64,11 @@ class TestInstitution(ApiTestCase):
         ))
 
     def test_cannot_add_institution_twice(self):
-        InstitutionFactory.create(siglum='HMI', name='Hevy Metal Institution')
+        InstitutionFactory.create(
+            siglum=u'HMI', name=u'Hevy Metal Institution'
+        )
 
         with expect.error_to_happen(IntegrityError):
             InstitutionFactory.create(
-                siglum='HMI', name='Hevy Metal Institution'
+                siglum=u'HMI', name=u'Hevy Metal Institution'
             )

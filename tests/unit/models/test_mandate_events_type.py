@@ -28,7 +28,7 @@ class TestPoliticalOffice(ApiTestCase):
 
     def test_can_create_mandate_events_type(self):
         mandate_events_type = MandateEventsTypeFactory.create(
-            name='Assumiu cargo no executivo'
+            name=u'Assumiu cargo no executivo'
         )
 
         expect(mandate_events_type.id).not_to_be_null()
@@ -50,7 +50,7 @@ class TestPoliticalOffice(ApiTestCase):
 
     @patch('politicos.models.mandate_events_type.logging')
     def test_can_add_mandate_events_type(self, logging_mock):
-        data = {'name': 'Assumiu cargo no executivo'}
+        data = {'name': u'Assumiu cargo no executivo'}
         mandate_events_type = MandateEventsType.add_mandate_events_type(
             self.db, data
         )
@@ -63,7 +63,7 @@ class TestPoliticalOffice(ApiTestCase):
         )
 
     def test_cannot_add_mandate_events_type_twice(self):
-        MandateEventsTypeFactory.create(name='Assumiu cargo no executivo')
+        MandateEventsTypeFactory.create(name=u'Assumiu cargo no executivo')
 
         with expect.error_to_happen(IntegrityError):
-            MandateEventsTypeFactory.create(name='Assumiu cargo no executivo')
+            MandateEventsTypeFactory.create(name=u'Assumiu cargo no executivo')

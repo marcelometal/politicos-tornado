@@ -32,13 +32,13 @@ class TestLegislator(ApiTestCase):
         date = datetime.utcnow().date()
 
         legislator = LegislatorFactory.create(
-            name='Marcelo Jorge Vieira',
-            picture='http://domain.com/picture.png',
-            website='http://domain.com/',
-            email='metal@alucinados.com',
-            gender='M',
+            name=u'Marcelo Jorge Vieira',
+            picture=u'http://domain.com/picture.png',
+            website=u'http://domain.com/',
+            email=u'metal@alucinados.com',
+            gender=u'M',
             date_of_birth=date,
-            about='Heavy Metal',
+            about=u'Heavy Metal',
         )
 
         expect(legislator.id).not_to_be_null()
@@ -81,7 +81,10 @@ class TestLegislator(ApiTestCase):
     @patch('politicos.models.legislator.logging')
     def test_can_add_legislator(self, logging_mock):
         date_of_birth = date_to_timestamp(datetime.utcnow().date())
-        data = {'name': 'Marcelo Jorge Vieira', 'date_of_birth': date_of_birth}
+        data = {
+            'name': u'Marcelo Jorge Vieira',
+            'date_of_birth': date_of_birth
+        }
         legislator = Legislator.add_legislator(self.db, data)
 
         expect(legislator.name).to_equal('Marcelo Jorge Vieira')

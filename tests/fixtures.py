@@ -68,11 +68,11 @@ class PoliticalPartyFactory(BaseFactory):
     class Meta:
         model = PoliticalParty
 
-    name = factory.Sequence(lambda n: 'political party {0}'.format(n))
-    siglum = factory.Sequence(lambda n: 'siglum {0}'.format(n))
-    wikipedia = factory.Sequence(lambda n: 'http://wiki-{0}.com/'.format(n))
-    website = factory.Sequence(lambda n: 'http://website-{0}.com/'.format(n))
-    logo = factory.Sequence(lambda n: 'http://logo-{0}.com/'.format(n))
+    name = factory.Sequence(lambda n: u'political party {0}'.format(n))
+    siglum = factory.Sequence(lambda n: u'siglum {0}'.format(n))
+    wikipedia = factory.Sequence(lambda n: u'http://wiki-{0}.com/'.format(n))
+    website = factory.Sequence(lambda n: u'http://website-{0}.com/'.format(n))
+    logo = factory.Sequence(lambda n: u'http://logo-{0}.com/'.format(n))
     founded_date = datetime.utcnow()
 
 
@@ -80,30 +80,30 @@ class LegislatorFactory(BaseFactory):
     class Meta:
         model = Legislator
 
-    name = factory.Sequence(lambda n: 'Legislator {0}'.format(n))
-    picture = factory.Sequence(lambda n: 'http://d.com/p{0}.png'.format(n))
-    website = factory.Sequence(lambda n: 'http://d{0}.com/'.format(n))
-    email = factory.Sequence(lambda n: 'name@d{0}.com'.format(n))
-    gender = factory.Iterator(['M', 'F'])
+    name = factory.Sequence(lambda n: u'Legislator {0}'.format(n))
+    picture = factory.Sequence(lambda n: u'http://d.com/p{0}.png'.format(n))
+    website = factory.Sequence(lambda n: u'http://d{0}.com/'.format(n))
+    email = factory.Sequence(lambda n: u'name@d{0}.com'.format(n))
+    gender = factory.Iterator([u'M', u'F'])
     date_of_birth = datetime.utcnow().date()
-    about = factory.Sequence(lambda n: ' My About {0}'.format(n))
+    about = factory.Sequence(lambda n: u' My About {0}'.format(n))
 
 
 class InstitutionFactory(BaseFactory):
     class Meta:
         model = Institution
 
-    siglum = factory.Sequence(lambda n: 'siglum {0}'.format(n))
-    name = factory.Sequence(lambda n: 'Institution {0}'.format(n))
-    logo = factory.Sequence(lambda n: 'http://i.com/p{0}.png'.format(n))
+    siglum = factory.Sequence(lambda n: u'siglum {0}'.format(n))
+    name = factory.Sequence(lambda n: u'Institution {0}'.format(n))
+    logo = factory.Sequence(lambda n: u'http://i.com/p{0}.png'.format(n))
 
 
 class PoliticalOfficeFactory(BaseFactory):
     class Meta:
         model = PoliticalOffice
 
-    name = factory.Sequence(lambda n: 'name {0}'.format(n))
-    slug = factory.LazyAttribute(lambda p: slugify(p.name))
+    name = factory.Sequence(lambda n: u'name {0}'.format(n))
+    slug = factory.LazyAttribute(lambda p: unicode(slugify(p.name)))
 
 
 class LegislatureFactory(BaseFactory):
@@ -129,8 +129,8 @@ class MandateEventsTypeFactory(BaseFactory):
     class Meta:
         model = MandateEventsType
 
-    name = factory.Sequence(lambda n: 'name {0}'.format(n))
-    slug = factory.LazyAttribute(lambda p: slugify(p.name))
+    name = factory.Sequence(lambda n: u'name {0}'.format(n))
+    slug = factory.LazyAttribute(lambda p: unicode(slugify(p.name)))
 
 
 class MandateEventsFactory(BaseFactory):
@@ -146,8 +146,8 @@ class LegislatorEventsTypeFactory(BaseFactory):
     class Meta:
         model = LegislatorEventsType
 
-    name = factory.Sequence(lambda n: 'name {0}'.format(n))
-    slug = factory.LazyAttribute(lambda p: slugify(p.name))
+    name = factory.Sequence(lambda n: u'name {0}'.format(n))
+    slug = factory.LazyAttribute(lambda p: unicode(slugify(p.name)))
 
 
 class LegislatorEventsFactory(BaseFactory):

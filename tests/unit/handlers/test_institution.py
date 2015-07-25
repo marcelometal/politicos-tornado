@@ -40,9 +40,9 @@ class TestInstitutionHandler(ApiTestCase):
     @gen_test
     def test_can_get_institution_info(self):
         InstitutionFactory.create(
-            name='Heavy Metal Institution',
-            siglum='HMI',
-            logo='http://l.com/logo.png'
+            name=u'Heavy Metal Institution',
+            siglum=u'HMI',
+            logo=u'http://l.com/logo.png'
         )
 
         response = yield self.anonymous_fetch(
@@ -76,8 +76,8 @@ class TestAllInstitutionHandler(ApiTestCase):
         institutions = []
         for x in range(5):
             institution = InstitutionFactory.create(
-                name='Institution %s' % x,
-                siglum='%s' % x,
+                name=u'Institution %s' % x,
+                siglum=u'%s' % x,
             )
             institutions.append(institution.to_dict())
 
