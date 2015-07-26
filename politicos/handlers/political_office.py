@@ -16,7 +16,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from tornado.gen import coroutine
-
+from sqlalchemy.exc import IntegrityError
 from ujson import loads
 
 from politicos.models.political_office import PoliticalOffice
@@ -30,7 +30,8 @@ class PoliticalOfficeHandler(BaseHandler):
         query = self.db.query(PoliticalOffice)
         political_office = query.filter(PoliticalOffice.slug == slug).first()
         if not political_office:
-            self.write('{}')
+            self.write_json({})
+            self.set_status(404, 'Political Office not found')
             return
 
         result = political_office.to_dict()
@@ -45,7 +46,8 @@ class AllPoliticalOfficesHandler(BaseHandler):
         political_offices = query.order_by(PoliticalOffice.name.asc()).all()
 
         if not political_offices:
-            self.write('{}')
+            self.write_json([])
+            self.set_status(404, 'Political Offices not found')
             return
 
         result = [x.to_dict() for x in political_offices]
@@ -58,10 +60,16 @@ class AllPoliticalOfficesHandler(BaseHandler):
         name = post_data.get('name')
 
         if not name:
-            self.set_status(400, 'Invalid Political Office')
+            self.set_status(422, 'Invalid Political Office')
+            self.write_json({'message': 'Invalid Political Office'})
             return
 
         data = {'name': name}
 
-        political_office = PoliticalOffice.add_political_office(self.db, data)
-        self.write_json(political_office.to_dict())
+        try:
+            political_office = PoliticalOffice.\
+                add_political_office(self.db, data)
+            self.write_json(political_office.to_dict())
+        except IntegrityError:
+            self.set_status(409, 'Political Office already exists')
+            self.write_json({'message': 'Political Office already exists'})

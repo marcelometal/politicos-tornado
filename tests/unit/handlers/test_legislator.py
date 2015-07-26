@@ -45,15 +45,18 @@ class TestAllLegislatorsHandler(ApiTestCase):
 
     @gen_test
     def test_cannot_get_legislators_info(self):
-        response = yield self.anonymous_fetch(
-            '/legislators/',
-            method='GET'
-        )
-
-        expect(response.code).to_equal(200)
-        legislators = loads(response.body)
-        expect(legislators).to_equal({})
-        expect(legislators).to_length(0)
+        try:
+            yield self.anonymous_fetch(
+                '/legislators/',
+                method='GET'
+            )
+        except HTTPError as e:
+            expect(e).not_to_be_null()
+            expect(e.code).to_equal(404)
+            expect(e.response.reason).to_be_like(
+                'Legislators not found'
+            )
+            expect(loads(e.response.body)).to_equal([])
 
     @gen_test
     def test_can_add_legislator(self):
@@ -76,5 +79,22 @@ class TestAllLegislatorsHandler(ApiTestCase):
             )
         except HTTPError as e:
             expect(e).not_to_be_null()
-            expect(e.code).to_equal(400)
-            expect(e.response.reason).to_be_like('Invalid legislator')
+            expect(e.code).to_equal(422)
+            expect(e.response.reason).to_be_like('Invalid Legislator')
+            expect(loads(e.response.body)).to_equal({
+                'message': 'Invalid Legislator'
+            })
+
+    @gen_test
+    def test_can_add_legislator_twice(self):
+        yield self.anonymous_fetch(
+            '/legislators/',
+            method='POST',
+            body=dumps({'name': 'Marcelo Jorge Vieira'})
+        )
+
+        yield self.anonymous_fetch(
+            '/legislators/',
+            method='POST',
+            body=dumps({'name': 'Marcelo Jorge Vieira'})
+        )

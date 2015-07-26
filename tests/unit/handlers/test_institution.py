@@ -28,14 +28,16 @@ class TestInstitutionHandler(ApiTestCase):
 
     @gen_test
     def test_cannot_get_institution_info(self):
-        response = yield self.anonymous_fetch(
-            '/institutions/HMI',
-            method='GET'
-        )
-        expect(response.code).to_equal(200)
-        institution = loads(response.body)
-        expect(institution).to_equal({})
-        expect(institution).to_length(0)
+        try:
+            yield self.anonymous_fetch(
+                '/institutions/HMI',
+                method='GET'
+            )
+        except HTTPError as e:
+            expect(e).not_to_be_null()
+            expect(e.code).to_equal(404)
+            expect(e.response.reason).to_be_like('Institution not found')
+            expect(loads(e.response.body)).to_equal({})
 
     @gen_test
     def test_can_get_institution_info(self):
@@ -61,15 +63,16 @@ class TestAllInstitutionHandler(ApiTestCase):
 
     @gen_test
     def test_cannot_get_institution_info(self):
-        response = yield self.anonymous_fetch(
-            '/institutions/',
-            method='GET'
-        )
-
-        expect(response.code).to_equal(200)
-        institution = loads(response.body)
-        expect(institution).to_equal({})
-        expect(institution).to_length(0)
+        try:
+            yield self.anonymous_fetch(
+                '/institutions/',
+                method='GET'
+            )
+        except HTTPError as e:
+            expect(e).not_to_be_null()
+            expect(e.code).to_equal(404)
+            expect(e.response.reason).to_be_like('Institutions not found')
+            expect(loads(e.response.body)).to_equal([])
 
     @gen_test
     def test_can_get_all_institutions(self):
@@ -121,8 +124,11 @@ class TestAllInstitutionHandler(ApiTestCase):
             )
         except HTTPError as e:
             expect(e).not_to_be_null()
-            expect(e.code).to_equal(500)
-            expect(e.response.reason).to_be_like('Internal Server Error')
+            expect(e.code).to_equal(409)
+            expect(e.response.reason).to_be_like('Institution already exists')
+            expect(loads(e.response.body)).to_equal({
+                'message': 'Institution already exists'
+            })
 
     @gen_test
     def test_cannot_add_institution_without_name(self):
@@ -134,8 +140,11 @@ class TestAllInstitutionHandler(ApiTestCase):
             )
         except HTTPError as e:
             expect(e).not_to_be_null()
-            expect(e.code).to_equal(400)
+            expect(e.code).to_equal(422)
             expect(e.response.reason).to_be_like('Invalid Institution')
+            expect(loads(e.response.body)).to_equal({
+                'message': 'Invalid Institution'
+            })
 
     @gen_test
     def test_cannot_add_institution_without_siglum(self):
@@ -147,5 +156,8 @@ class TestAllInstitutionHandler(ApiTestCase):
             )
         except HTTPError as e:
             expect(e).not_to_be_null()
-            expect(e.code).to_equal(400)
+            expect(e.code).to_equal(422)
             expect(e.response.reason).to_be_like('Invalid Institution')
+            expect(loads(e.response.body)).to_equal({
+                'message': 'Invalid Institution'
+            })

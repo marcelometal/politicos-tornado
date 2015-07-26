@@ -16,7 +16,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from tornado.gen import coroutine
-
+from sqlalchemy.exc import IntegrityError
 from ujson import loads
 
 from politicos.models.institution import Institution
@@ -30,7 +30,8 @@ class InstitutionHandler(BaseHandler):
         query = self.db.query(Institution)
         institution = query.filter(Institution.siglum == siglum).first()
         if not institution:
-            self.write('{}')
+            self.set_status(404, 'Institution not found')
+            self.write_json({})
             return
 
         result = institution.to_dict()
@@ -45,7 +46,8 @@ class AllInstitutionsHandler(BaseHandler):
         institutions = query.order_by(Institution.name.asc()).all()
 
         if not institutions:
-            self.write('{}')
+            self.set_status(404, 'Institutions not found')
+            self.write_json([])
             return
 
         result = [x.to_dict() for x in institutions]
@@ -59,7 +61,8 @@ class AllInstitutionsHandler(BaseHandler):
         siglum = post_data.get('siglum')
 
         if not name or not siglum:
-            self.set_status(400, 'Invalid Institution')
+            self.set_status(422, 'Invalid Institution')
+            self.write_json({'message': 'Invalid Institution'})
             return
 
         data = {
@@ -68,5 +71,9 @@ class AllInstitutionsHandler(BaseHandler):
             'logo': post_data.get('logo'),
         }
 
-        institution = Institution.add_institution(self.db, data)
-        self.write_json(institution.to_dict())
+        try:
+            institution = Institution.add_institution(self.db, data)
+            self.write_json(institution.to_dict())
+        except IntegrityError:
+            self.set_status(409, 'Institution already exists')
+            self.write_json({'message': 'Institution already exists'})

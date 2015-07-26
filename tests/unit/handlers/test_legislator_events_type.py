@@ -28,14 +28,18 @@ class TestLegislatorEventsTypeHandler(ApiTestCase):
 
     @gen_test
     def test_can_get_empty_legislator_events_type_info(self):
-        response = yield self.anonymous_fetch(
-            '/legislator-events-types/presidente-do-partido/',
-            method='GET'
-        )
-        expect(response.code).to_equal(200)
-        legislator_events_type = loads(response.body)
-        expect(legislator_events_type).to_equal({})
-        expect(legislator_events_type).to_length(0)
+        try:
+            yield self.anonymous_fetch(
+                '/legislator-events-types/presidente-do-partido/',
+                method='GET'
+            )
+        except HTTPError as e:
+            expect(e).not_to_be_null()
+            expect(e.code).to_equal(404)
+            expect(e.response.reason).to_be_like(
+                'Legislator Events Type not found'
+            )
+            expect(loads(e.response.body)).to_equal({})
 
     @gen_test
     def test_can_get_legislator_events_type_info(self):
@@ -60,15 +64,18 @@ class TestAllPoliticalOfficesHandler(ApiTestCase):
 
     @gen_test
     def test_can_get_empty_legislator_events_type_info(self):
-        response = yield self.anonymous_fetch(
-            '/legislator-events-types/',
-            method='GET'
-        )
-
-        expect(response.code).to_equal(200)
-        legislator_events_type = loads(response.body)
-        expect(legislator_events_type).to_equal({})
-        expect(legislator_events_type).to_length(0)
+        try:
+            yield self.anonymous_fetch(
+                '/legislator-events-types/',
+                method='GET'
+            )
+        except HTTPError as e:
+            expect(e).not_to_be_null()
+            expect(e.code).to_equal(404)
+            expect(e.response.reason).to_be_like(
+                'Legislators Events Type not found'
+            )
+            expect(loads(e.response.body)).to_equal([])
 
     @gen_test
     def test_can_get_all_legislator_events_types(self):
@@ -116,8 +123,13 @@ class TestAllPoliticalOfficesHandler(ApiTestCase):
             )
         except HTTPError as e:
             expect(e).not_to_be_null()
-            expect(e.code).to_equal(500)
-            expect(e.response.reason).to_be_like('Internal Server Error')
+            expect(e.code).to_equal(409)
+            expect(e.response.reason).to_be_like(
+                'Legislator Events Type already exists'
+            )
+            expect(loads(e.response.body)).to_equal({
+                'message': 'Legislator Events Type already exists'
+            })
 
     @gen_test
     def test_cannot_add_legislator_events_type_without_name(self):
@@ -129,7 +141,10 @@ class TestAllPoliticalOfficesHandler(ApiTestCase):
             )
         except HTTPError as e:
             expect(e).not_to_be_null()
-            expect(e.code).to_equal(400)
+            expect(e.code).to_equal(422)
             expect(e.response.reason).to_be_like(
-                'Invalid legislator Events Type'
+                'Invalid Legislator Events Type'
             )
+            expect(loads(e.response.body)).to_equal({
+                'message': 'Invalid Legislator Events Type'
+            })

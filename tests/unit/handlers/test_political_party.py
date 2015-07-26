@@ -28,14 +28,16 @@ class TestPoliticalPartyHandler(ApiTestCase):
 
     @gen_test
     def test_cannot_get_political_party_info(self):
-        response = yield self.anonymous_fetch(
-            '/political-parties/PBA',
-            method='GET'
-        )
-        expect(response.code).to_equal(200)
-        political_party = loads(response.body)
-        expect(political_party).to_equal({})
-        expect(political_party).to_length(0)
+        try:
+            yield self.anonymous_fetch(
+                '/political-parties/PBA',
+                method='GET'
+            )
+        except HTTPError as e:
+            expect(e).not_to_be_null()
+            expect(e.code).to_equal(404)
+            expect(e.response.reason).to_be_like('Political Party not found')
+            expect(loads(e.response.body)).to_equal({})
 
     @gen_test
     def test_can_get_political_party_info(self):
@@ -56,15 +58,16 @@ class TestAllPoliticalPartyHandler(ApiTestCase):
 
     @gen_test
     def test_cannot_get_political_party_info(self):
-        response = yield self.anonymous_fetch(
-            '/political-parties/',
-            method='GET'
-        )
-
-        expect(response.code).to_equal(200)
-        political_party = loads(response.body)
-        expect(political_party).to_equal({})
-        expect(political_party).to_length(0)
+        try:
+            yield self.anonymous_fetch(
+                '/political-parties/',
+                method='GET'
+            )
+        except HTTPError as e:
+            expect(e).not_to_be_null()
+            expect(e.code).to_equal(404)
+            expect(e.response.reason).to_be_like('Political Parties not found')
+            expect(loads(e.response.body)).to_equal([])
 
     @gen_test
     def test_can_get_all_political_parties(self):
@@ -114,8 +117,13 @@ class TestAllPoliticalPartyHandler(ApiTestCase):
             )
         except HTTPError as e:
             expect(e).not_to_be_null()
-            expect(e.code).to_equal(500)
-            expect(e.response.reason).to_be_like('Internal Server Error')
+            expect(e.code).to_equal(409)
+            expect(e.response.reason).to_be_like(
+                'Political Party already exists'
+            )
+            expect(loads(e.response.body)).to_equal({
+                'message': 'Political Party already exists'
+            })
 
     @gen_test
     def test_cannot_add_political_party_without_name(self):
@@ -127,8 +135,11 @@ class TestAllPoliticalPartyHandler(ApiTestCase):
             )
         except HTTPError as e:
             expect(e).not_to_be_null()
-            expect(e.code).to_equal(400)
-            expect(e.response.reason).to_be_like('Invalid political party.')
+            expect(e.code).to_equal(422)
+            expect(e.response.reason).to_be_like('Invalid Political Party')
+            expect(loads(e.response.body)).to_equal({
+                'message': 'Invalid Political Party'
+            })
 
     @gen_test
     def test_cannot_add_political_party_without_siglum(self):
@@ -140,5 +151,8 @@ class TestAllPoliticalPartyHandler(ApiTestCase):
             )
         except HTTPError as e:
             expect(e).not_to_be_null()
-            expect(e.code).to_equal(400)
-            expect(e.response.reason).to_be_like('Invalid political party.')
+            expect(e.code).to_equal(422)
+            expect(e.response.reason).to_be_like('Invalid Political Party')
+            expect(loads(e.response.body)).to_equal({
+                'message': 'Invalid Political Party'
+            })

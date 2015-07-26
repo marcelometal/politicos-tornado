@@ -28,14 +28,18 @@ class TestMandateEventsTypeHandler(ApiTestCase):
 
     @gen_test
     def test_can_get_empty_mandate_events_type_info(self):
-        response = yield self.anonymous_fetch(
-            '/mandate-events-types/assumiu-cargo-no-executivo/',
-            method='GET'
-        )
-        expect(response.code).to_equal(200)
-        mandate_events_type = loads(response.body)
-        expect(mandate_events_type).to_equal({})
-        expect(mandate_events_type).to_length(0)
+        try:
+            yield self.anonymous_fetch(
+                '/mandate-events-types/assumiu-cargo-no-executivo/',
+                method='GET'
+            )
+        except HTTPError as e:
+            expect(e).not_to_be_null()
+            expect(e.code).to_equal(404)
+            expect(e.response.reason).to_be_like(
+                'Mandate Events Type not found'
+            )
+            expect(loads(e.response.body)).to_equal({})
 
     @gen_test
     def test_can_get_mandate_events_type_info(self):
@@ -60,15 +64,18 @@ class TestAllPoliticalOfficesHandler(ApiTestCase):
 
     @gen_test
     def test_can_get_empty_mandate_events_type_info(self):
-        response = yield self.anonymous_fetch(
-            '/mandate-events-types/',
-            method='GET'
-        )
-
-        expect(response.code).to_equal(200)
-        mandate_events_type = loads(response.body)
-        expect(mandate_events_type).to_equal({})
-        expect(mandate_events_type).to_length(0)
+        try:
+            yield self.anonymous_fetch(
+                '/mandate-events-types/',
+                method='GET'
+            )
+        except HTTPError as e:
+            expect(e).not_to_be_null()
+            expect(e.code).to_equal(404)
+            expect(e.response.reason).to_be_like(
+                'Mandate Events Types not found'
+            )
+            expect(loads(e.response.body)).to_equal([])
 
     @gen_test
     def test_can_get_all_mandate_events_types(self):
@@ -114,8 +121,13 @@ class TestAllPoliticalOfficesHandler(ApiTestCase):
             )
         except HTTPError as e:
             expect(e).not_to_be_null()
-            expect(e.code).to_equal(500)
-            expect(e.response.reason).to_be_like('Internal Server Error')
+            expect(e.code).to_equal(409)
+            expect(e.response.reason).to_be_like(
+                'Mandate Events Type already exists'
+            )
+            expect(loads(e.response.body)).to_equal({
+                'message': 'Mandate Events Type already exists'
+            })
 
     @gen_test
     def test_cannot_add_mandate_events_type_without_name(self):
@@ -127,5 +139,8 @@ class TestAllPoliticalOfficesHandler(ApiTestCase):
             )
         except HTTPError as e:
             expect(e).not_to_be_null()
-            expect(e.code).to_equal(400)
+            expect(e.code).to_equal(422)
             expect(e.response.reason).to_be_like('Invalid Mandate Events Type')
+            expect(loads(e.response.body)).to_equal({
+                'message': 'Invalid Mandate Events Type'
+            })

@@ -16,7 +16,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from tornado.gen import coroutine
-
+from sqlalchemy.exc import IntegrityError
 from ujson import loads
 
 from politicos.models.mandate_events import MandateEvents
@@ -33,7 +33,8 @@ class AllMandateEventsHandler(BaseHandler):
             .all()
 
         if not mandate_events:
-            self.write('{}')
+            self.write_json([])
+            self.set_status(404, 'Mandate Events not found')
             return
 
         result = [x.to_dict() for x in mandate_events]
@@ -48,7 +49,8 @@ class AllMandateEventsHandler(BaseHandler):
         mandate_events_type_id = post_data.get('mandate_events_type_id')
 
         if not date or not mandate_events_type_id or not mandate_id:
-            self.set_status(400, 'Invalid Mandate Events')
+            self.set_status(422, 'Invalid Mandate Events')
+            self.write_json({'message': 'Invalid Mandate Events'})
             return
 
         data = {
@@ -57,5 +59,9 @@ class AllMandateEventsHandler(BaseHandler):
             'mandate_events_type_id': mandate_events_type_id
         }
 
-        mandate_events = MandateEvents.add_mandate_events(self.db, data)
-        self.write_json(mandate_events.to_dict())
+        try:
+            mandate_events = MandateEvents.add_mandate_events(self.db, data)
+            self.write_json(mandate_events.to_dict())
+        except IntegrityError:
+            self.set_status(409, 'Mandate Events already exists')
+            self.write_json({'message': 'Mandate Events already exists'})

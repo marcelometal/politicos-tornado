@@ -28,14 +28,16 @@ class TestPoliticalOfficeHandler(ApiTestCase):
 
     @gen_test
     def test_can_get_empty_political_office_info(self):
-        response = yield self.anonymous_fetch(
-            '/political-offices/deputado-estadual/',
-            method='GET'
-        )
-        expect(response.code).to_equal(200)
-        political_office = loads(response.body)
-        expect(political_office).to_equal({})
-        expect(political_office).to_length(0)
+        try:
+            yield self.anonymous_fetch(
+                '/political-offices/deputado-estadual/',
+                method='GET'
+            )
+        except HTTPError as e:
+            expect(e).not_to_be_null()
+            expect(e.code).to_equal(404)
+            expect(e.response.reason).to_be_like('Political Office not found')
+            expect(loads(e.response.body)).to_equal({})
 
     @gen_test
     def test_can_get_political_office_info(self):
@@ -56,15 +58,16 @@ class TestAllPoliticalOfficesHandler(ApiTestCase):
 
     @gen_test
     def test_can_get_empty_political_office_info(self):
-        response = yield self.anonymous_fetch(
-            '/political-offices/',
-            method='GET'
-        )
-
-        expect(response.code).to_equal(200)
-        political_office = loads(response.body)
-        expect(political_office).to_equal({})
-        expect(political_office).to_length(0)
+        try:
+            yield self.anonymous_fetch(
+                '/political-offices/',
+                method='GET'
+            )
+        except HTTPError as e:
+            expect(e).not_to_be_null()
+            expect(e.code).to_equal(404)
+            expect(e.response.reason).to_be_like('Political Offices not found')
+            expect(loads(e.response.body)).to_equal([])
 
     @gen_test
     def test_can_get_all_political_offices(self):
@@ -111,8 +114,13 @@ class TestAllPoliticalOfficesHandler(ApiTestCase):
             )
         except HTTPError as e:
             expect(e).not_to_be_null()
-            expect(e.code).to_equal(500)
-            expect(e.response.reason).to_be_like('Internal Server Error')
+            expect(e.code).to_equal(409)
+            expect(e.response.reason).to_be_like(
+                'Political Office already exists'
+            )
+            expect(loads(e.response.body)).to_equal({
+                'message': 'Political Office already exists'
+            })
 
     @gen_test
     def test_cannot_add_political_office_without_name(self):
@@ -124,5 +132,8 @@ class TestAllPoliticalOfficesHandler(ApiTestCase):
             )
         except HTTPError as e:
             expect(e).not_to_be_null()
-            expect(e.code).to_equal(400)
+            expect(e.code).to_equal(422)
             expect(e.response.reason).to_be_like('Invalid Political Office')
+            expect(loads(e.response.body)).to_equal({
+                'message': 'Invalid Political Office'
+            })

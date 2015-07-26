@@ -16,7 +16,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from tornado.gen import coroutine
-
+from sqlalchemy.exc import IntegrityError
 from ujson import loads
 
 from politicos.models.legislator_events_type import LegislatorEventsType
@@ -32,7 +32,8 @@ class LegislatorEventsTypeHandler(BaseHandler):
             .filter(LegislatorEventsType.slug == slug)\
             .first()
         if not legislator_events_type:
-            self.write('{}')
+            self.write_json({})
+            self.set_status(404, 'Legislator Events Type not found')
             return
 
         result = legislator_events_type.to_dict()
@@ -49,7 +50,8 @@ class AllLegislatorEventsTypesHandler(BaseHandler):
             .all()
 
         if not legislator_events_types:
-            self.write('{}')
+            self.set_status(404, 'Legislators Events Type not found')
+            self.write_json([])
             return
 
         result = [x.to_dict() for x in legislator_events_types]
@@ -62,12 +64,18 @@ class AllLegislatorEventsTypesHandler(BaseHandler):
         name = post_data.get('name')
 
         if not name:
-            self.set_status(400, 'Invalid Legislator Events Type')
+            self.set_status(422, 'Invalid Legislator Events Type')
+            self.write_json({'message': 'Invalid Legislator Events Type'})
             return
 
         data = {'name': name}
 
-        legislator_events_type = LegislatorEventsType \
-            .add_legislator_events_type(self.db, data)
-
-        self.write_json(legislator_events_type.to_dict())
+        try:
+            legislator_events_type = LegislatorEventsType \
+                .add_legislator_events_type(self.db, data)
+            self.write_json(legislator_events_type.to_dict())
+        except IntegrityError:
+            self.set_status(409, 'Legislator Events Type already exists')
+            self.write_json({
+                'message': 'Legislator Events Type already exists'
+            })

@@ -16,7 +16,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from tornado.gen import coroutine
-
+from sqlalchemy.exc import IntegrityError
 from ujson import loads
 
 from politicos.models.legislature import Legislature
@@ -31,7 +31,8 @@ class AllLegislaturesHandler(BaseHandler):
         legislatures = query.order_by(Legislature.date_start.asc()).all()
 
         if not legislatures:
-            self.write('{}')
+            self.set_status(404, 'Legislatures not found')
+            self.write_json([])
             return
 
         result = [x.to_dict() for x in legislatures]
@@ -46,7 +47,8 @@ class AllLegislaturesHandler(BaseHandler):
         institution_id = post_data.get('institution_id')
 
         if not date_start or not date_end or not institution_id:
-            self.set_status(400, 'Invalid Legislature')
+            self.set_status(422, 'Invalid Legislature')
+            self.write_json({'message': 'Invalid Legislature'})
             return
 
         data = {
@@ -55,5 +57,9 @@ class AllLegislaturesHandler(BaseHandler):
             'institution_id': institution_id,
         }
 
-        legislature = Legislature.add_legislature(self.db, data)
-        self.write_json(legislature.to_dict())
+        try:
+            legislature = Legislature.add_legislature(self.db, data)
+            self.write_json(legislature.to_dict())
+        except IntegrityError:
+            self.set_status(409, 'Legislature already exists')
+            self.write_json({'message': 'Legislature already exists'})

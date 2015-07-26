@@ -33,15 +33,18 @@ class TestAllLegislatorEventsHandler(ApiTestCase):
 
     @gen_test
     def test_can_get_empty_legislator_events_info(self):
-        response = yield self.anonymous_fetch(
-            '/legislator-events/',
-            method='GET'
-        )
-
-        expect(response.code).to_equal(200)
-        legislator_events = loads(response.body)
-        expect(legislator_events).to_equal({})
-        expect(legislator_events).to_length(0)
+        try:
+            yield self.anonymous_fetch(
+                '/legislator-events/',
+                method='GET'
+            )
+        except HTTPError as e:
+            expect(e).not_to_be_null()
+            expect(e.code).to_equal(404)
+            expect(e.response.reason).to_be_like(
+                'Legislators Events not found'
+            )
+            expect(loads(e.response.body)).to_equal([])
 
     @gen_test
     def test_can_get_all_legislator_events(self):
@@ -78,7 +81,9 @@ class TestAllLegislatorEventsHandler(ApiTestCase):
         expect(response.code).to_equal(200)
         legislator_events = loads(response.body)
         expect(legislator_events.get('date')).to_equal(date)
-        expect(legislator_events.get('legislator')).to_equal(legislator.to_dict())
+        expect(legislator_events.get('legislator')).to_equal(
+            legislator.to_dict()
+        )
         expect(legislator_events.get('legislator_events_type')).to_equal(
             legislator_events_type.to_dict()
         )
@@ -111,8 +116,13 @@ class TestAllLegislatorEventsHandler(ApiTestCase):
             )
         except HTTPError as e:
             expect(e).not_to_be_null()
-            expect(e.code).to_equal(500)
-            expect(e.response.reason).to_be_like('Internal Server Error')
+            expect(e.code).to_equal(409)
+            expect(e.response.reason).to_be_like(
+                'Legislator Events already exists'
+            )
+            expect(loads(e.response.body)).to_equal({
+                'message': 'Legislator Events already exists'
+            })
 
     @gen_test
     def test_cannot_add_legislator_events_without_date(self):
@@ -130,8 +140,11 @@ class TestAllLegislatorEventsHandler(ApiTestCase):
             )
         except HTTPError as e:
             expect(e).not_to_be_null()
-            expect(e.code).to_equal(400)
+            expect(e.code).to_equal(422)
             expect(e.response.reason).to_be_like('Invalid Legislator Events')
+            expect(loads(e.response.body)).to_equal({
+                'message': 'Invalid Legislator Events'
+            })
 
     @gen_test
     def test_cannot_add_legislator_events_without_legislator_id(self):
@@ -149,11 +162,16 @@ class TestAllLegislatorEventsHandler(ApiTestCase):
             )
         except HTTPError as e:
             expect(e).not_to_be_null()
-            expect(e.code).to_equal(400)
+            expect(e.code).to_equal(422)
             expect(e.response.reason).to_be_like('Invalid Legislator Events')
+            expect(loads(e.response.body)).to_equal({
+                'message': 'Invalid Legislator Events'
+            })
 
     @gen_test
-    def test_cannot_add_legislator_events_without_legislator_events_type_id(self):
+    def test_cannot_add_legislator_events_without_legislator_events_type_id(
+            self):
+
         legislator = LegislatorFactory.create()
         date = date_to_timestamp(datetime.utcnow().date())
 
@@ -168,5 +186,8 @@ class TestAllLegislatorEventsHandler(ApiTestCase):
             )
         except HTTPError as e:
             expect(e).not_to_be_null()
-            expect(e.code).to_equal(400)
+            expect(e.code).to_equal(422)
             expect(e.response.reason).to_be_like('Invalid Legislator Events')
+            expect(loads(e.response.body)).to_equal({
+                'message': 'Invalid Legislator Events'
+            })

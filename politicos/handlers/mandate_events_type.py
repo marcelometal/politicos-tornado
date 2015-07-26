@@ -16,7 +16,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from tornado.gen import coroutine
-
+from sqlalchemy.exc import IntegrityError
 from ujson import loads
 
 from politicos.models.mandate_events_type import MandateEventsType
@@ -32,7 +32,8 @@ class MandateEventsTypeHandler(BaseHandler):
             .filter(MandateEventsType.slug == slug)\
             .first()
         if not mandate_events_type:
-            self.write('{}')
+            self.write_json({})
+            self.set_status(404, 'Mandate Events Type not found')
             return
 
         result = mandate_events_type.to_dict()
@@ -49,7 +50,8 @@ class AllMandateEventsTypesHandler(BaseHandler):
             .all()
 
         if not mandate_events_types:
-            self.write('{}')
+            self.write_json([])
+            self.set_status(404, 'Mandate Events Types not found')
             return
 
         result = [x.to_dict() for x in mandate_events_types]
@@ -62,12 +64,16 @@ class AllMandateEventsTypesHandler(BaseHandler):
         name = post_data.get('name')
 
         if not name:
-            self.set_status(400, 'Invalid Mandate Events Type')
+            self.set_status(422, 'Invalid Mandate Events Type')
+            self.write_json({'message': 'Invalid Mandate Events Type'})
             return
 
         data = {'name': name}
 
-        mandate_events_type = MandateEventsType.add_mandate_events_type(
-            self.db, data
-        )
-        self.write_json(mandate_events_type.to_dict())
+        try:
+            mandate_events_type = MandateEventsType.\
+                add_mandate_events_type(self.db, data)
+            self.write_json(mandate_events_type.to_dict())
+        except IntegrityError:
+            self.set_status(409, 'Mandate Events Type already exists')
+            self.write_json({'message': 'Mandate Events Type already exists'})

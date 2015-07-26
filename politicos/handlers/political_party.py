@@ -16,7 +16,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from tornado.gen import coroutine
-
+from sqlalchemy.exc import IntegrityError
 from ujson import loads
 
 from politicos.models.political_party import PoliticalParty
@@ -30,7 +30,8 @@ class PoliticalPartyHandler(BaseHandler):
         query = self.db.query(PoliticalParty)
         political_party = query.filter(PoliticalParty.siglum == siglum).first()
         if not political_party:
-            self.write('{}')
+            self.write_json({})
+            self.set_status(404, 'Political Party not found')
             return
 
         result = political_party.to_dict()
@@ -45,7 +46,8 @@ class AllPoliticalPartyHandler(BaseHandler):
         political_party = query.order_by(PoliticalParty.name.asc()).all()
 
         if not political_party:
-            self.write('{}')
+            self.write_json([])
+            self.set_status(404, 'Political Parties not found')
             return
 
         result = [x.to_dict() for x in political_party]
@@ -59,7 +61,8 @@ class AllPoliticalPartyHandler(BaseHandler):
         siglum = post_data.get('siglum')
 
         if not name or not siglum:
-            self.set_status(400, 'Invalid political party.')
+            self.set_status(422, 'Invalid political party')
+            self.write_json({'message': 'Invalid Political Party'})
             return
 
         data = {
@@ -72,5 +75,9 @@ class AllPoliticalPartyHandler(BaseHandler):
             'tse_number': post_data.get('tse_number'),
         }
 
-        political_party = PoliticalParty.add_political_party(self.db, data)
-        self.write_json(political_party.to_dict())
+        try:
+            political_party = PoliticalParty.add_political_party(self.db, data)
+            self.write_json(political_party.to_dict())
+        except IntegrityError:
+            self.set_status(409, 'Political Party already exists')
+            self.write_json({'message': 'Political Party already exists'})

@@ -17,6 +17,7 @@
 
 from ujson import loads
 from tornado.gen import coroutine
+from sqlalchemy.exc import IntegrityError
 
 from politicos.models.legislator import Legislator
 from politicos.handlers import BaseHandler
@@ -30,7 +31,8 @@ class AllLegislatorsHandler(BaseHandler):
         legislators = query.order_by(Legislator.name.asc()).all()
 
         if not legislators:
-            self.write('{}')
+            self.set_status(404, 'Legislators not found')
+            self.write_json([])
             return
 
         result = [x.to_dict() for x in legislators]
@@ -43,7 +45,8 @@ class AllLegislatorsHandler(BaseHandler):
         name = post_data.get('name')
 
         if not name:
-            self.set_status(400, 'Invalid legislator')
+            self.set_status(422, 'Invalid Legislator')
+            self.write_json({'message': 'Invalid Legislator'})
             return
 
         data = {
