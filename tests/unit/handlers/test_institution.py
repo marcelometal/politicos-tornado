@@ -101,7 +101,10 @@ class TestAllInstitutionHandler(ApiTestCase):
             method='POST',
             body=dumps({'name': 'Heavy Metal Institution', 'siglum': 'HMI'})
         )
-        expect(response.code).to_equal(200)
+        expect(response.code).to_equal(201)
+        expect(response.headers.get('location')).to_equal(
+            '/institutions/HMI'
+        )
         data = loads(response.body)
         expect(data.get('name')).to_equal('Heavy Metal Institution')
         expect(data.get('siglum')).to_equal('HMI')

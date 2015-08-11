@@ -73,6 +73,8 @@ class AllInstitutionsHandler(BaseHandler):
 
         try:
             institution = Institution.add_institution(self.db, data)
+            self.set_status(201, 'Institution created')
+            self.set_header('Location', '%s' % institution.absolute_url(self))
             self.write_json(institution.to_dict())
         except IntegrityError:
             self.set_status(409, 'Institution already exists')

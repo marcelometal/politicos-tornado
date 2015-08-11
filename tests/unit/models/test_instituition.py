@@ -72,3 +72,11 @@ class TestInstitution(ApiTestCase):
             InstitutionFactory.create(
                 siglum=u'HMI', name=u'Hevy Metal Institution'
             )
+
+    def test_can_get_absolute_url(self):
+        data = {'name': u'Hevy Metal Institution', 'siglum': u'HMI'}
+        institution = Institution.add_institution(self.db, data)
+
+        expect(institution.absolute_url(self.get_app())).to_equal(
+            '/institutions/HMI'
+        )

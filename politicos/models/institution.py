@@ -43,6 +43,9 @@ class Institution(Base):
             'logo': self.logo,
         }
 
+    def absolute_url(self, handler):
+        return handler.reverse_url('institution', self.siglum)
+
     @classmethod
     def add_institution(self, db, data):
         institution = Institution(
