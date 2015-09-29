@@ -59,3 +59,11 @@ class TestPoliticalOffice(ApiTestCase):
 
         with expect.error_to_happen(IntegrityError):
             PoliticalOfficeFactory.create(name=u'Deputado Federal')
+
+    def test_can_get_absolute_url(self):
+        data = {'name': u'Deputado Federal'}
+        political_office = PoliticalOffice.add_political_office(self.db, data)
+
+        expect(political_office.absolute_url(self.get_app())).to_equal(
+            '/political-offices/deputado-federal'
+        )

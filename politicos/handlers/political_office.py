@@ -69,6 +69,10 @@ class AllPoliticalOfficesHandler(BaseHandler):
         try:
             political_office = PoliticalOffice.\
                 add_political_office(self.db, data)
+            self.set_status(201, 'Political Office created')
+            self.set_header(
+                'Location', '%s' % political_office.absolute_url(self)
+            )
             self.write_json(political_office.to_dict())
         except IntegrityError:
             self.set_status(409, 'Political Office already exists')

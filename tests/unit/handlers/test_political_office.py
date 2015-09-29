@@ -93,7 +93,11 @@ class TestAllPoliticalOfficesHandler(ApiTestCase):
             method='POST',
             body=dumps({'name': u'Deputado Estadual'})
         )
-        expect(response.code).to_equal(200)
+        expect(response.code).to_equal(201)
+        expect(response.headers.get('location')).to_equal(
+            '/political-offices/deputado-estadual'
+        )
+
         data = loads(response.body)
         expect(data.get('name')).to_equal('Deputado Estadual')
         expect(data.get('slug')).to_equal('deputado-estadual')

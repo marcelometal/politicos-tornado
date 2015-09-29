@@ -42,6 +42,9 @@ class PoliticalOffice(Base):
             'slug': self.slug,
         }
 
+    def absolute_url(self, handler):
+        return handler.reverse_url('political-office', self.slug)
+
     @classmethod
     def add_political_office(self, db, data):
         political_office = PoliticalOffice(
