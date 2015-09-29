@@ -101,7 +101,11 @@ class TestAllPoliticalOfficesHandler(ApiTestCase):
             method='POST',
             body=dumps({'name': u'Assumiu cargo no executivo'})
         )
-        expect(response.code).to_equal(200)
+        expect(response.code).to_equal(201)
+        expect(response.headers.get('location')).to_equal(
+            '/mandate-events-types/assumiu-cargo-no-executivo'
+        )
+
         data = loads(response.body)
         expect(data.get('name')).to_equal('Assumiu cargo no executivo')
 

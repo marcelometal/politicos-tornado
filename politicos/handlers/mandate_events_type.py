@@ -73,6 +73,10 @@ class AllMandateEventsTypesHandler(BaseHandler):
         try:
             mandate_events_type = MandateEventsType.\
                 add_mandate_events_type(self.db, data)
+            self.set_status(201, 'Mandate Events Type created')
+            self.set_header(
+                'Location', '%s' % mandate_events_type.absolute_url(self)
+            )
             self.write_json(mandate_events_type.to_dict())
         except IntegrityError:
             self.set_status(409, 'Mandate Events Type already exists')

@@ -67,3 +67,13 @@ class TestPoliticalOffice(ApiTestCase):
 
         with expect.error_to_happen(IntegrityError):
             MandateEventsTypeFactory.create(name=u'Assumiu cargo no executivo')
+
+    def test_can_get_absolute_url(self):
+        data = {'name': u'Assumiu cargo no executivo'}
+        mandate_events_type = MandateEventsType.add_mandate_events_type(
+            self.db, data
+        )
+
+        expect(mandate_events_type.absolute_url(self.get_app())).to_equal(
+            '/mandate-events-types/assumiu-cargo-no-executivo'
+        )

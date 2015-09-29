@@ -42,6 +42,9 @@ class MandateEventsType(Base):
             'slug': self.slug,
         }
 
+    def absolute_url(self, handler):
+        return handler.reverse_url('mandate-events-type', self.slug)
+
     @classmethod
     def add_mandate_events_type(self, db, data):
         mandate_events_type = MandateEventsType(
