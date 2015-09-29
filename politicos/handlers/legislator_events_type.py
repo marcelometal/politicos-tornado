@@ -73,6 +73,10 @@ class AllLegislatorEventsTypesHandler(BaseHandler):
         try:
             legislator_events_type = LegislatorEventsType \
                 .add_legislator_events_type(self.db, data)
+            self.set_status(201, 'Legislator Events Type created')
+            self.set_header(
+                'Location', '%s' % legislator_events_type.absolute_url(self)
+            )
             self.write_json(legislator_events_type.to_dict())
         except IntegrityError:
             self.set_status(409, 'Legislator Events Type already exists')

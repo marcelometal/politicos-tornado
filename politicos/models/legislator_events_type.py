@@ -42,6 +42,9 @@ class LegislatorEventsType(Base):
             'slug': self.slug,
         }
 
+    def absolute_url(self, handler):
+        return handler.reverse_url('legislator-events-type', self.slug)
+
     @classmethod
     def add_legislator_events_type(self, db, data):
         legislator_events_type = LegislatorEventsType(

@@ -103,7 +103,11 @@ class TestAllPoliticalOfficesHandler(ApiTestCase):
             method='POST',
             body=dumps({'name': u'Presidente do Partido'})
         )
-        expect(response.code).to_equal(200)
+        expect(response.code).to_equal(201)
+        expect(response.headers.get('location')).to_equal(
+            '/legislator-events-types/presidente-do-partido'
+        )
+
         data = loads(response.body)
         expect(data.get('name')).to_equal('Presidente do Partido')
 

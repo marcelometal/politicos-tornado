@@ -66,3 +66,12 @@ class TestPoliticalOffice(ApiTestCase):
 
         with expect.error_to_happen(IntegrityError):
             LegislatorEventsTypeFactory.create(name=u'Presidente do Partido')
+
+    def test_can_get_absolute_url(self):
+        data = {'name': u'Presidente do Partido'}
+        legislator_events_type = LegislatorEventsType \
+            .add_legislator_events_type(self.db, data)
+
+        expect(legislator_events_type.absolute_url(self.get_app())).to_equal(
+            '/legislator-events-types/presidente-do-partido'
+        )
